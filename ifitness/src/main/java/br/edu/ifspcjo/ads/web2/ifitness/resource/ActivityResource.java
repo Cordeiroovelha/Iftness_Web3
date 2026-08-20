@@ -38,6 +38,16 @@ public class ActivityResource {
 		return activityRepository.findAll();
 	}
 	
+	@GetMapping("/user/{email}")
+	@PreAuthorize("hasAuthority('ROLE_SEARCH_ACTIVITY')")
+	public ResponseEntity<List<Activity>> listByUser(@PathVariable String email){
+		List<Activity> activities = activityService.findByUser(email);
+		if(!activities.isEmpty()) {
+			return ResponseEntity.ok(activities);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
 	@GetMapping("/{id}")
 	@PreAuthorize("hasAuthority('ROLE_SEARCH_ACTIVITY')")
 	public ResponseEntity<Activity> findById(@PathVariable Long id) {
@@ -69,4 +79,5 @@ public class ActivityResource {
 		Activity activitySaved = activityService.update(id, activity);
 		return ResponseEntity.ok(activitySaved);
 	}
+	
 }
