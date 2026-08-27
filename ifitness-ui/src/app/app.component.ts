@@ -1,29 +1,39 @@
-import { Component } from '@angular/core';
+import { Component, LOCALE_ID } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import localePt from '@angular/common/locales/pt';
+import { registerLocaleData } from '@angular/common';
+
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ToastModule} from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog'
 
 import { AuthService } from './security/auth.service';
 import { NavbarComponent } from './core/navbar/navbar.component';
+
+import { ErrorHandlerService } from './core/error-handler.service';
+
+registerLocaleData(localePt);
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
     RouterOutlet,
-    NavbarComponent
+    NavbarComponent,
+    ToastModule,
+    ConfirmDialogModule
   ],
   providers: [
-    AuthService
+    AuthService,
+    MessageService,
+    ConfirmationService,
+    ErrorHandlerService,
+    { provide: LOCALE_ID, useValue: 'pt-BR' }
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'ifitness';
-
-  activities = [
-    { type: 'CORRIDA', date: '29/07/2026', distance: 8.0, duration: 42, user: 'Fernando Duarte' },
-    { type: 'CORRIDA', date: '30/07/2026', distance: 8.0, duration: 43, user: 'Fernando Duarte' },
-    { type: 'CAMINHADA', date: '30/07/2026', distance: 5.0, duration: 55, user: 'Juliana Silva' }
-  ];
+  title = 'ifitness-ui';
 
 }
