@@ -6,7 +6,7 @@ import { FormControl } from '@angular/forms';
   selector: 'app-message',
   imports: [CommonModule],
   template: `
-    <div *ngIf="hasError()" class="p-message p-message-error">
+    <div *ngIf="hasError()" class="text-danger small mt-1">
       {{ text }}
     </div>
   `,

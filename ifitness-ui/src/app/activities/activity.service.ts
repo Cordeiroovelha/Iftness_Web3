@@ -6,7 +6,7 @@ import { firstValueFrom } from 'rxjs';
 import moment from 'moment';
 
 import { AuthService } from '../security/auth.service';
-import { Activity } from '../core/model';
+import { Activity, ActivityStatistics } from '../core/model';
 
 export interface ActivityFilter {
   user?: any,
@@ -100,6 +100,12 @@ export class ActivityService {
       this.stringToDate(activity);
     }
     return activity;
+  }
+
+  async statistics(): Promise<ActivityStatistics> {
+    return await firstValueFrom(
+      this.http.get<ActivityStatistics>(`${this.activitiesUrl}/statistics`)
+    );
   }
 
   private stringToDate(activity: Activity): void {
