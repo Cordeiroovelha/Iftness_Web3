@@ -56,7 +56,7 @@ cd Iftness_Web3/ifitness-ui
 npm install
 
 # Inicie o servidor de desenvolvimento
-npm start
+ng serve -o
 ```
 
 O frontend será iniciado em `http://localhost:4200` (porta padrão do Angular).
