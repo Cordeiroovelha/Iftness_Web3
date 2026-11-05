@@ -13,23 +13,56 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.query.QueryUtils;
+
 public class ActivityRepositoryImpl implements ActivityRepositoryQuery {
 
 	@PersistenceContext
 	private EntityManager manager;
 	
 	@Override
-	public List<Activity> filter(ActivityFilter activityFilter) {
+	public Page<Activity> filter(ActivityFilter activityFilter, Pageable pageable) {
 		CriteriaBuilder builder = manager.getCriteriaBuilder();
 		CriteriaQuery<Activity> criteria = builder.createQuery(Activity.class);
 		Root<Activity> root = criteria.from(Activity.class);
-		
+
 		Predicate[] predicates = createConstraints(activityFilter, builder, root);
 		criteria.where(predicates);
+
+		// Ordenação: vem do parâmetro "sort" da requisição (ex.: sort=date,desc)
+		criteria.orderBy(QueryUtils.toOrders(pageable.getSort(), root, builder));
 		
 		TypedQuery<Activity> query = manager.createQuery(criteria);
-		return query.getResultList();
+		addPaginationConstraints(query, pageable);
+
+		return new PageImpl<>(query.getResultList(), pageable, total(activityFilter));
 	}
+	
+	// Paginação: busca no banco somente os registros da página solicitada
+		private void addPaginationConstraints(TypedQuery<Activity> query, Pageable pageable) {
+			int currentPage = pageable.getPageNumber();
+			int totalRecordsPerPage = pageable.getPageSize();
+			int firstPageRecord = currentPage * totalRecordsPerPage;
+
+			query.setFirstResult(firstPageRecord);
+			query.setMaxResults(totalRecordsPerPage);
+		}
+
+		// Total de registros que atendem ao filtro (somando todas as páginas)
+		private Long total(ActivityFilter activityFilter) {
+			CriteriaBuilder builder = manager.getCriteriaBuilder();
+			CriteriaQuery<Long> criteria = builder.createQuery(Long.class);
+			Root<Activity> root = criteria.from(Activity.class);
+
+			Predicate[] predicates = createConstraints(activityFilter, builder, root);
+			criteria.where(predicates);
+
+			criteria.select(builder.count(root));
+			return manager.createQuery(criteria).getSingleResult();
+		}
 
 	private Predicate[] createConstraints(ActivityFilter activityFilter, CriteriaBuilder builder, Root<Activity> root) {
 		List<Predicate> predicates = new ArrayList<>();

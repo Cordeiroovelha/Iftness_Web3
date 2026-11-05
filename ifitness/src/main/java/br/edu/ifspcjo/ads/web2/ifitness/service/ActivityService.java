@@ -7,6 +7,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import jakarta.validation.Valid;
 
 import br.edu.ifspcjo.ads.web2.ifitness.domain.model.Activity;
@@ -62,8 +64,8 @@ public class ActivityService {
 		return null;
 	}
 	
-	public List<Activity> filter(ActivityFilter activityFilter){
-		return activityRepository.filter(activityFilter);
+	public Page<Activity> filter(ActivityFilter activityFilter, Pageable pageable){
+		return activityRepository.filter(activityFilter, pageable);
 	}
 	
 	public ActivityStatistics statistics(String email) {

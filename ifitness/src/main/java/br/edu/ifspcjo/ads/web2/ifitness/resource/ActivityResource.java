@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.Authentication;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import br.edu.ifspcjo.ads.web2.ifitness.repository.projection.ActivityStatistics;
 import br.edu.ifspcjo.ads.web2.ifitness.domain.model.Activity;
@@ -37,8 +39,8 @@ public class ActivityResource {
 	
 	@GetMapping
 	@PreAuthorize("hasAuthority('ROLE_SEARCH_ACTIVITY')")
-	public List<Activity> filter(ActivityFilter activityFilter){
-		return activityService.filter(activityFilter);
+	public Page<Activity> filter(ActivityFilter activityFilter, Pageable pageable){
+		return activityService.filter(activityFilter, pageable);
 	}
 	
 	@GetMapping("/user/{email}")
